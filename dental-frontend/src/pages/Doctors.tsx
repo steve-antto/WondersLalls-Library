@@ -1,7 +1,8 @@
 import { Award, Stethoscope, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
-
+import binuImg from '../assets/Binu.jpeg';
+import lokaswariImg from '../assets/Lokaswari.jpeg';
 export default function Doctors() {
   const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -13,13 +14,15 @@ export default function Doctors() {
       bio: t('doc_bio'),
       patients: '200k+',
       years: '29+',
+      image: binuImg,
     },
     {
       name: t('doc2_name'),
       qual: t('doc2_qual'),
       bio: t('doc2_bio'),
       patients: '100+',
-      years: '10+',
+      years: '8+',
+      image: lokaswariImg,
     }
   ];
 
@@ -57,10 +60,14 @@ export default function Doctors() {
                   <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="relative">
                       <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white bg-gray-100">
-                         <div className="w-full h-full bg-gradient-to-tr from-primary/20 to-accent/20 flex flex-col items-center justify-center text-primary">
-                            <Stethoscope className="w-24 h-24 mb-4 opacity-50" />
-                            <span className="font-bold text-xl opacity-50 text-center px-4">{doc.name}</span>
-                         </div>
+                         {doc.image ? (
+                           <img src={doc.image} alt={doc.name} className="w-full h-full object-cover object-top" />
+                         ) : (
+                           <div className="w-full h-full bg-gradient-to-tr from-primary/20 to-accent/20 flex flex-col items-center justify-center text-primary">
+                              <Stethoscope className="w-24 h-24 mb-4 opacity-50" />
+                              <span className="font-bold text-xl opacity-50 text-center px-4">{doc.name}</span>
+                           </div>
+                         )}
                       </div>
                       <div className="absolute -bottom-6 -right-6 glass px-6 py-4 rounded-2xl flex items-center gap-4 shadow-xl">
                          <Award className="w-8 h-8 text-yellow-500" />

@@ -1,14 +1,15 @@
-import { Star } from 'lucide-react';
+import { Star, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function Reviews() {
   const { t } = useTranslation();
   const reviews = [
-    { nameKey: 'ramesh_k', dateKey: 'months_ago_2', key: 'review1' },
-    { nameKey: 'priya_s', dateKey: 'month_ago_1', key: 'review2' },
-    { nameKey: 'arun_m', dateKey: 'weeks_ago_3', key: 'review3' },
-    { nameKey: 'sudha_v', dateKey: 'week_ago_1', key: 'review4' },
-    { nameKey: 'kumar_r', dateKey: 'days_ago_5', key: 'review5' }
+    { nameKey: 'rev_alex', badgeKey: 'rev_alex_badge', dateKey: 'rev_alex_date', key: 'rev_alex_text', stars: 4, color: 'bg-orange-500' },
+    { nameKey: 'rev_reeja', badgeKey: 'rev_reeja_badge', dateKey: 'rev_reeja_date', key: 'rev_reeja_text', stars: 5, color: 'bg-green-600' },
+    { nameKey: 'rev_soundhar', badgeKey: 'rev_soundhar_badge', dateKey: 'rev_soundhar_date', key: 'rev_soundhar_text', stars: 4, color: 'bg-blue-600' },
+    { nameKey: 'rev_priya', badgeKey: 'rev_priya_badge', dateKey: 'rev_priya_date', key: 'rev_priya_text', stars: 5, color: 'bg-purple-500' },
+    { nameKey: 'rev_arun', badgeKey: 'rev_arun_badge', dateKey: 'rev_arun_date', key: 'rev_arun_text', stars: 5, color: 'bg-teal-500' },
+    { nameKey: 'rev_kumar', badgeKey: 'rev_kumar_badge', dateKey: 'rev_kumar_date', key: 'rev_kumar_text', stars: 4, color: 'bg-rose-500' },
   ];
 
   return (
@@ -25,17 +26,20 @@ export default function Reviews() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {reviews.map((review, idx) => (
             <div key={idx} className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 hover:-translate-y-2 transition-all duration-300">
-              <div className="flex gap-1 text-yellow-400 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-current" />)}
-              </div>
-              <p className="text-gray-700 text-lg italic mb-6">{t(review.key)}</p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold text-xl">{t(review.nameKey).charAt(0)}</div>
+              <div className="flex items-center gap-4 mb-5">
+                <div className={`w-12 h-12 ${review.color} text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md`}>{t(review.nameKey).charAt(0)}</div>
                 <div>
                   <h4 className="font-bold text-gray-900">{t(review.nameKey)}</h4>
-                  <p className="text-sm text-gray-500">{t(review.dateKey)}</p>
+                  <p className="text-xs text-gray-500">{t(review.badgeKey)}</p>
                 </div>
               </div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex gap-0.5 text-yellow-400">
+                  {[...Array(5)].map((_, i) => <Star key={i} className={`w-4 h-4 ${i < (review.stars || 5) ? 'fill-current' : 'text-gray-200'}`} />)}
+                </div>
+                <span className="text-xs text-gray-400">{t(review.dateKey)}</span>
+              </div>
+              <p className="text-gray-700 text-[15px] leading-relaxed whitespace-pre-line">{t(review.key)}</p>
             </div>
           ))}
         </div>
