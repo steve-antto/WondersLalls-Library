@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #7b92ff; /* Lavender Blue primary */
+  --color-primary-hover: #6079f8;
+  --color-secondary: #9aaeff;
+  --color-accent: #c0cdff;
+  --color-background: transparent; /* Makes background transparent so CinematicBackground canvas is visible! */
+  --color-surface: rgba(15, 23, 42, 0.4); /* Elegant glass overlay */
+  --color-text: #f1f5f9; /* Slate 100 for high-contrast dark mode readability */
+  --color-text-muted: #94a3b8; /* Slate 400 */
+
+  /* Override standard indigo and cyan utility scales to dynamically re-skin to lavender-blue globally */
+  --color-indigo-400: #9dafff;
+  --color-indigo-500: #7b92ff;
+  --color-indigo-600: #6079f8;
+  --color-indigo-700: #4963f2;
+  --color-indigo-800: #3851e5;
+  --color-indigo-900: #2a3fd3;
+
+  --color-cyan-400: #a9beff;
+  --color-cyan-500: #8ba2ff;
+  --color-cyan-600: #7b92ff;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  scroll-behavior: smooth;
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
