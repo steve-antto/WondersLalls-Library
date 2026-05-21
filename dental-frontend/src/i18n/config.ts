@@ -162,7 +162,19 @@ const en = {
   bds_surgeon: "BDS • Lead Surgeon",
   no_scans_yet: "No scans uploaded.",
   no_reports_yet: "No reports uploaded.",
-  delete_success: "File deleted successfully!"
+  delete_success: "File deleted successfully!",
+  patient_photos: "Patient Photos",
+  upload_photo: "Upload Photo",
+  photo_uploaded: "Photo uploaded!",
+  no_photos_yet: "No photos uploaded yet.",
+  availability: "Availability",
+  monday: "Monday",
+  tuesday: "Tuesday",
+  wednesday: "Wednesday",
+  thursday: "Thursday",
+  friday: "Friday",
+  saturday: "Saturday",
+  sunday: "Sunday"
 };
 
 const ta: Record<string, string> = {
@@ -324,7 +336,19 @@ const ta: Record<string, string> = {
   write_review_btn: "கூகிள் விமர்சனம் எழுதுங்கள்",
   no_scans_yet: "ஸ்கேன்கள் எதுவும் பதிவேற்றப்படவில்லை.",
   no_reports_yet: "அறிக்கைகள் எதுவும் பதிவேற்றப்படவில்லை.",
-  delete_success: "கோப்பு வெற்றிகரமாக நீக்கப்பட்டது!"
+  delete_success: "கோப்பு வெற்றிகரமாக நீக்கப்பட்டது!",
+  patient_photos: "நோயாளி புகைப்படங்கள்",
+  upload_photo: "புகைப்படம் பதிவேற்று",
+  photo_uploaded: "புகைப்படம் பதிவேற்றப்பட்டது!",
+  no_photos_yet: "புகைப்படங்கள் எதுவும் பதிவேற்றப்படவில்லை.",
+  availability: "கிடைக்கும் நாட்கள்",
+  monday: "திங்கள்",
+  tuesday: "செவ்வாய்",
+  wednesday: "புதன்",
+  thursday: "வியாழன்",
+  friday: "வெள்ளி",
+  saturday: "சனி",
+  sunday: "ஞாயிறு"
 };
 
 const ml: Record<string, string> = {
@@ -475,7 +499,19 @@ const ml: Record<string, string> = {
   write_review_btn: "ഒരു ഗൂഗിൾ റിവ്യൂ എഴുതുക",
   no_scans_yet: "സ്കാനുകൾ അപ്‌ലോഡ് ചെയ്തിട്ടില്ല.",
   no_reports_yet: "റിപ്പോർട്ടുകൾ അപ്‌ലോഡ് ചെയ്തിട്ടില്ല.",
-  delete_success: "ഫയൽ വിജയകരമായി നീക്കം ചെയ്തു!"
+  delete_success: "ഫയൽ വിജയകരമായി നീക്കം ചെയ്തു!",
+  patient_photos: "രോഗിയുടെ ഫോട്ടോകൾ",
+  upload_photo: "ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക",
+  photo_uploaded: "ഫോട്ടോ അപ്‌ലോഡ് ചെയ്തു!",
+  no_photos_yet: "ഫോട്ടോകൾ അപ്‌ലോഡ് ചെയ്തിട്ടില്ല.",
+  availability: "ലഭ്യത",
+  monday: "തിങ്കൾ",
+  tuesday: "ചൊവ്വ",
+  wednesday: "ബുധൻ",
+  thursday: "വ്യാഴം",
+  friday: "വെള്ളി",
+  saturday: "ശനി",
+  sunday: "ഞായർ"
 };
 
 const hi: Record<string, string> = {
@@ -624,7 +660,19 @@ const hi: Record<string, string> = {
   write_review_btn: "गूगल समीक्षा लिखें",
   no_scans_yet: "कोई स्कैन अपलोड नहीं किया गया।",
   no_reports_yet: "कोई रिपोर्ट अपलोड नहीं की गई।",
-  delete_success: "फ़ाइल सफलतापूर्वक हटा दी गई!"
+  delete_success: "फ़ाइल सफलतापूर्वक हटा दी गई!",
+  patient_photos: "रोगी की तस्वीरें",
+  upload_photo: "फ़ोटो अपलोड करें",
+  photo_uploaded: "फ़ोटो अपलोड हो गई!",
+  no_photos_yet: "अभी तक कोई फ़ोटो अपलोड नहीं की गई।",
+  availability: "उपलब्धता",
+  monday: "सोमवार",
+  tuesday: "मंगलवार",
+  wednesday: "बुधवार",
+  thursday: "गुरुवार",
+  friday: "शुक्रवार",
+  saturday: "शनिवार",
+  sunday: "रविवार"
 };
 
 const te: Record<string, string> = {
@@ -772,7 +820,19 @@ const te: Record<string, string> = {
   write_review_btn: "గూగుల్ రివ్యూ రాయండి",
   no_scans_yet: "స్కాన్‌లు అప్ లోడ్ చేయబడలేదు.",
   no_reports_yet: "నివేదికలు అప్ లోడ్ చేయబడలేదు.",
-  delete_success: "ఫైల్ విజయవంతంగా తొలగించబడింది!"
+  delete_success: "ఫైల్ విజయవంతంగా తొలగించబడింది!",
+  patient_photos: "రోగి ఫోటోలు",
+  upload_photo: "ఫోటో అప్‌లోడ్ చేయి",
+  photo_uploaded: "ఫోటో అప్‌లోడ్ చేయబడింది!",
+  no_photos_yet: "ఇంకా ఫోటోలు అప్‌లోడ్ చేయబడలేదు.",
+  availability: "అందుబాటు",
+  monday: "సోమవారం",
+  tuesday: "మంగళవారం",
+  wednesday: "బుధవారం",
+  thursday: "గురువారం",
+  friday: "శుక్రవారం",
+  saturday: "శనివారం",
+  sunday: "ఆదివారం"
 };
 
 const resources = {

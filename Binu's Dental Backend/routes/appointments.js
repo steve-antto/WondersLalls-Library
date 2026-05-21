@@ -69,4 +69,15 @@ appointmentsRouter.patch('/:id/payment', requireAdmin, async (req, res) => {
     return res.json({ success: true, appointment: updated });
 });
 
+// ─── ADMIN: Delete appointment ───
+appointmentsRouter.delete('/:id', requireAdmin, async (req, res) => {
+    try {
+        const deleted = await Appointment.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ message: 'Appointment not found' });
+        return res.json({ success: true, message: 'Appointment deleted successfully' });
+    } catch (err) {
+        return res.status(500).json({ message: 'Failed to delete appointment', error: err.message });
+    }
+});
+
 export default appointmentsRouter;

@@ -15,6 +15,7 @@ const appointmentSchema = new mongoose.Schema({
     notes: { type: String, default: '' },
     prescription: { type: String, default: '' },
     medicalHistory: { type: String, default: '' },
+    photos: [{ filename: String, url: String, caption: { type: String, default: '' }, uploadedAt: { type: Date, default: Date.now } }],
     scans: [{ filename: String, url: String, uploadedAt: { type: Date, default: Date.now } }],
     reports: [{ filename: String, url: String, uploadedAt: { type: Date, default: Date.now } }],
     invoiceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invoice' },

@@ -50,6 +50,16 @@ medicalRouter.post('/appointments/:id/upload-report', requireAdmin, upload.singl
     res.json({ success: true, appointment: appt });
 });
 
+// ─── Admin: Upload patient photo ───
+medicalRouter.post('/appointments/:id/upload-photo', requireAdmin, upload.single('file'), async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const fileUrl = `/uploads/${req.file.filename}`;
+    const caption = req.body.caption || '';
+    const appt = await Appointment.findByIdAndUpdate(req.params.id,
+        { $push: { photos: { filename: req.file.originalname, url: fileUrl, caption } } }, { returnDocument: 'after' });
+    res.json({ success: true, appointment: appt });
+});
+
 // ─── Admin: Update prescription ───
 medicalRouter.patch('/appointments/:id/prescription', requireAdmin, async (req, res) => {
     const { prescription } = req.body;
@@ -66,7 +76,7 @@ medicalRouter.patch('/appointments/:id/medical-history', requireAdmin, async (re
     res.json({ success: true, appointment: appt });
 });
 
-// ─── Admin: Add scan/report via URL ───
+// ─── Admin: Add scan/report/photo via URL ───
 medicalRouter.post('/appointments/:id/scans', requireAdmin, async (req, res) => {
     const { filename, url } = req.body;
     const appt = await Appointment.findByIdAndUpdate(req.params.id,
@@ -78,6 +88,13 @@ medicalRouter.post('/appointments/:id/reports', requireAdmin, async (req, res) =
     const { filename, url } = req.body;
     const appt = await Appointment.findByIdAndUpdate(req.params.id,
         { $push: { reports: { filename, url } } }, { returnDocument: 'after' });
+    res.json({ success: true, appointment: appt });
+});
+
+medicalRouter.post('/appointments/:id/photos', requireAdmin, async (req, res) => {
+    const { filename, url, caption } = req.body;
+    const appt = await Appointment.findByIdAndUpdate(req.params.id,
+        { $push: { photos: { filename, url, caption: caption || '' } } }, { returnDocument: 'after' });
     res.json({ success: true, appointment: appt });
 });
 
@@ -101,11 +118,11 @@ medicalRouter.get('/all-appointments', requireAdmin, async (req, res) => {
     }
 });
 
-// ─── Admin: Delete scan/report file ───
+// ─── Admin: Delete scan/report/photo file ───
 medicalRouter.delete('/appointments/:id/files', requireAdmin, async (req, res) => {
     const { type, url } = req.body;
-    if (type !== 'scan' && type !== 'report') return res.status(400).json({ message: 'Invalid file type' });
-    const field = type === 'scan' ? 'scans' : 'reports';
+    if (type !== 'scan' && type !== 'report' && type !== 'photo') return res.status(400).json({ message: 'Invalid file type' });
+    const field = type === 'scan' ? 'scans' : type === 'report' ? 'reports' : 'photos';
     try {
         const appt = await Appointment.findByIdAndUpdate(
             req.params.id,

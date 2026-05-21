@@ -2,14 +2,15 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Calendar, User, Settings, FileText, ShieldCheck, Users, BarChart3, CreditCard, ClipboardList, ScanLine, Pill, Upload, X, ZoomIn, Trash2 } from 'lucide-react';
+import { Calendar, User, Settings, FileText, ShieldCheck, Users, BarChart3, CreditCard, ClipboardList, ScanLine, Pill, Upload, X, ZoomIn, Trash2, Camera } from 'lucide-react';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
 
 const API_BASE = 'http://localhost:4500';
 
 interface FileItem { filename: string; url: string; }
-interface Appt { _id: string; patientName: string; patientPhone: string; patientEmail: string; date: string; time: string; service: string; status: string; paymentStatus: string; paymentAmount: number; prescription: string; medicalHistory: string; notes: string; scans: FileItem[]; reports: FileItem[]; }
+interface PhotoItem { filename: string; url: string; caption?: string; }
+interface Appt { _id: string; patientName: string; patientPhone: string; patientEmail: string; date: string; time: string; service: string; status: string; paymentStatus: string; paymentAmount: number; prescription: string; medicalHistory: string; notes: string; scans: FileItem[]; reports: FileItem[]; photos: PhotoItem[]; }
 
 // Lightbox component for enlarging images
 function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
@@ -35,6 +36,7 @@ export default function Portal() {
   const [uploading, setUploading] = useState(false);
   const scanFileRef = useRef<HTMLInputElement>(null);
   const reportFileRef = useRef<HTMLInputElement>(null);
+  const photoFileRef = useRef<HTMLInputElement>(null);
 
   const refreshAppts = () => {
     const endpoint = isAdmin ? '/medical/all-appointments' : '/medical/my-appointments';
@@ -82,10 +84,44 @@ export default function Portal() {
     setUploading(false);
   };
 
+  const uploadPhoto = async (id: string, file: File) => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      await api.post(`/medical/appointments/${id}/upload-photo`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      toast.success('📸 ' + t('photo_uploaded'));
+      refreshAppts();
+    } catch (e: any) { toast.error(e.response?.data?.message || t('upload_failed')); }
+    setUploading(false);
+  };
+
+  const deletePhoto = async (id: string, url: string) => {
+    try {
+      await api.delete(`/medical/appointments/${id}/files`, { data: { type: 'photo', url } });
+      toast.success(t('delete_success'));
+      refreshAppts();
+    } catch (e: any) { toast.error(e.response?.data?.message || t('update_failed')); }
+  };
+
   const deleteFile = async (id: string, type: 'scan' | 'report', url: string) => {
     try {
       await api.delete(`/medical/appointments/${id}/files`, { data: { type, url } });
       toast.success(t('delete_success'));
+      refreshAppts();
+    } catch (e: any) {
+      toast.error(e.response?.data?.message || t('update_failed'));
+    }
+  };
+
+  const deleteAppointment = async (id: string, patientName: string) => {
+    if (!window.confirm(`Are you sure you want to delete the appointment for ${patientName}?`)) return;
+    try {
+      await api.delete(`/appointments/${id}`);
+      toast.success("🗑️ Appointment deleted successfully!");
+      setSelectedAppt(null);
       refreshAppts();
     } catch (e: any) {
       toast.error(e.response?.data?.message || t('update_failed'));
@@ -181,14 +217,67 @@ export default function Portal() {
           {/* Full Horizontal Width Selected Appointment Details */}
           {selectedAppt && (
             <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom duration-300">
-              {/* Header Card */}
+              {/* Header Card with Patient Photo */}
               <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <ClipboardList className="text-primary w-6 h-6" /> 
-                    {selectedAppt.patientName} - {selectedAppt.service}
-                  </h2>
-                  <p className="text-gray-500 mt-1">{selectedAppt.date} · {selectedAppt.time}</p>
+                <div className="flex items-center gap-5">
+                  {/* Patient Photo Avatar */}
+                  <div className="relative group flex-shrink-0">
+                    {selectedAppt.photos?.length > 0 ? (
+                      <div className="cursor-pointer" onClick={() => setLightbox({ src: getFileUrl(selectedAppt.photos[selectedAppt.photos.length - 1].url), alt: selectedAppt.patientName })}>
+                        <img
+                          src={getFileUrl(selectedAppt.photos[selectedAppt.photos.length - 1].url)}
+                          alt={selectedAppt.patientName}
+                          className="w-20 h-20 rounded-2xl object-cover border-2 border-violet-200 shadow-md group-hover:border-violet-400 transition-all group-hover:shadow-lg"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-2xl flex items-center justify-center transition-all">
+                          <ZoomIn className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-all drop-shadow" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100 border-2 border-dashed border-violet-300 flex items-center justify-center text-violet-400">
+                        <Camera className="w-7 h-7" />
+                      </div>
+                    )}
+                    {isAdmin && (
+                      <>
+                        <input type="file" ref={photoFileRef} accept="image/*" className="hidden"
+                          onChange={(e) => { if (e.target.files?.[0] && selectedAppt) uploadPhoto(selectedAppt._id, e.target.files[0]); }} />
+                        <button
+                          disabled={uploading}
+                          onClick={() => photoFileRef.current?.click()}
+                          className="absolute -bottom-1.5 -right-1.5 p-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-md transition-all active:scale-90 z-10"
+                          title={t('upload_photo')}
+                        >
+                          <Camera className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  {/* Patient Info */}
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                      <ClipboardList className="text-primary w-6 h-6" /> 
+                      {selectedAppt.patientName} - {selectedAppt.service}
+                    </h2>
+                    <p className="text-gray-500 mt-1">{selectedAppt.date} · {selectedAppt.time}</p>
+                    {selectedAppt.photos?.length > 1 && (
+                      <div className="flex items-center gap-1.5 mt-2">
+                        {selectedAppt.photos.map((p, i) => (
+                          <div key={i} className="relative group/thumb cursor-pointer" onClick={() => setLightbox({ src: getFileUrl(p.url), alt: p.caption || p.filename })}>
+                            <img src={getFileUrl(p.url)} alt={p.caption || p.filename} className="w-9 h-9 rounded-lg object-cover border border-gray-200 hover:border-violet-400 transition-all hover:shadow-md" />
+                            {isAdmin && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deletePhoto(selectedAppt._id, p.url); }}
+                                className="absolute -top-1 -right-1 p-0.5 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-sm transition-all z-10 opacity-0 group-hover/thumb:opacity-100"
+                              >
+                                <X className="w-2.5 h-2.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
                   {isAdmin && (
@@ -217,6 +306,14 @@ export default function Portal() {
                       <span className={`px-3 py-1 rounded-full text-sm font-bold ${payColor(selectedAppt.paymentStatus || 'pending')}`}>₹{selectedAppt.paymentAmount || 0}</span>
                       <span className="text-gray-500 text-sm ml-2">({t(selectedAppt.paymentStatus || 'pending')})</span>
                     </div>
+                  )}
+                  {isAdmin && (
+                    <button
+                      onClick={() => deleteAppointment(selectedAppt._id, selectedAppt.patientName)}
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-md shadow-red-600/10"
+                    >
+                      <Trash2 className="w-4 h-4" /> Delete Appointment
+                    </button>
                   )}
                   <button onClick={() => setSelectedAppt(null)} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-bold transition-colors">✕ {t('close_btn') || 'Close'}</button>
                 </div>
