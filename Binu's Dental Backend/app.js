@@ -63,36 +63,48 @@ const startServer = async () => {
         // Connect to MongoDB first to prevent the server from receiving requests without a DB link
         await connectToDatabase();
 
-        const server = app.listen(PORT, () => {
-            console.log(`Server is running securely on http://localhost:${PORT}`);
-        });
+        if (!process.env.VERCEL) {
+            const server = app.listen(PORT, () => {
+                console.log(`Server is running securely on http://localhost:${PORT}`);
+            });
 
-        server.on('error', (err) => {
-            if (err.code === 'EADDRINUSE') {
-                console.log(`Port ${PORT} is busy. Trying to free it...`);
-                import('child_process').then(({ execSync }) => {
-                    try {
-                        execSync(`fuser -k ${PORT}/tcp`, { stdio: 'ignore' });
-                    } catch(_) {}
-                    setTimeout(() => {
-                        server.listen(PORT, () => {
-                            console.log(`Server is running securely on http://localhost:${PORT}`);
-                        });
-                    }, 2000);
-                });
-            } else {
-                console.error('Server error:', err);
-                process.exit(1);
-            }
-        });
+            server.on('error', (err) => {
+                if (err.code === 'EADDRINUSE') {
+                    console.log(`Port ${PORT} is busy. Trying to free it...`);
+                    import('child_process').then(({ execSync }) => {
+                        try {
+                            execSync(`fuser -k ${PORT}/tcp`, { stdio: 'ignore' });
+                        } catch(_) {}
+                        setTimeout(() => {
+                            server.listen(PORT, () => {
+                                console.log(`Server is running securely on http://localhost:${PORT}`);
+                            });
+                        }, 2000);
+                    });
+                } else {
+                    console.error('Server error:', err);
+                    process.exit(1);
+                }
+            });
+        } else {
+            console.log('Running in serverless environment (Vercel). Database connected successfully.');
+        }
     } catch (error) {
         console.error('Critical failure during initialization sequence:', error.message);
-        process.exit(1);
+        if (!process.env.VERCEL) {
+            process.exit(1);
+        }
     }
 };
 
-startServer().catch((err) => {
-    console.error('Failed to resolve outer lifecycle initialization promise:', err);
-});
+if (!process.env.VERCEL) {
+    startServer().catch((err) => {
+        console.error('Failed to resolve outer lifecycle initialization promise:', err);
+    });
+} else {
+    connectToDatabase().catch((err) => {
+        console.error('Failed to connect to database during Vercel cold start:', err);
+    });
+}
 
 export default app;

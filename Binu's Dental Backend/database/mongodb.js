@@ -9,6 +9,9 @@ if(!DB_URI){
 }
 
 const connectToDatabase = async () => {
+    if (mongoose.connection.readyState >= 1) {
+        return;
+    }
     try{
         await mongoose.connect(DB_URI);
         console.log(`Connected to database in ${NODE_ENV} mode`);
