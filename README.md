@@ -137,3 +137,10 @@ The frontend will run locally on [http://localhost:5173/](http://localhost:5173/
 *   **API Authentication**: All medical and dashboard-related routes require custom headers validating Firebase JWT tokens.
 *   **Input Validation**: Dynamic client-side and server-side validators ensure strict format compliance on phone numbers, dates, and times.
 *   **Sterilization & Medical Safety**: System models strictly track sterilization cycles matching clinic autoclave protocols.
+
+---
+
+## 🚀 Deploying to Vercel
+
+For details on how to deploy this monorepos project to Vercel (both frontend and backend), please refer to our comprehensive [Vercel Deployment Guide](vercel_deployment_guide.md). We have added optimized `vercel.json` config files to both directories to handle serverless routing and database pooling seamlessly.
+
