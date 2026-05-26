@@ -1,5 +1,4 @@
 import express from 'express';
-import { sendWhatsAppContact } from '../services/whatsapp.js';
 
 const router = express.Router();
 
@@ -11,13 +10,7 @@ router.post('/', async (req, res, next) => {
             return res.status(400).json({ message: "Name and message are required." });
         }
 
-        const result = await sendWhatsAppContact(name, email || 'Not provided', message);
-
-        if (result) {
-            console.log(`✅ Contact message from ${name} forwarded via WhatsApp.`);
-        } else {
-            console.warn(`⚠️ WhatsApp forwarding failed for contact message from ${name}. Msg: "${message}"`);
-        }
+        console.log(`📬 [New Contact Message] Name: ${name} | Email: ${email || 'Not provided'} | Message: "${message}"`);
 
         return res.status(200).json({ message: "Message received successfully!" });
     } catch (error) {
