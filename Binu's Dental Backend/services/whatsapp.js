@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 // Meta WhatsApp Business Cloud API
 const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const WHATSAPP_PHONE_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
@@ -40,21 +38,29 @@ Please arrive 10 mins early.
 Thank you for choosing us! 😊`;
 
     try {
-        const response = await axios.post(API_URL, {
-            messaging_product: 'whatsapp',
-            to: formattedPhone,
-            type: 'text',
-            text: { body }
-        }, {
+        const response = await fetch(API_URL, {
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${WHATSAPP_TOKEN}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                messaging_product: 'whatsapp',
+                to: formattedPhone,
+                type: 'text',
+                text: { body }
+            })
         });
-        console.log(`✅ WhatsApp sent to +${formattedPhone} | ID: ${response.data.messages?.[0]?.id}`);
-        return response.data;
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error?.message || response.statusText);
+        }
+
+        console.log(`✅ WhatsApp sent to +${formattedPhone} | ID: ${data.messages?.[0]?.id}`);
+        return data;
     } catch (error) {
-        console.error('❌ WhatsApp send failed:', error.response?.data || error.message);
+        console.error('❌ WhatsApp send failed:', error.message);
         return null;
     }
 };
@@ -78,21 +84,29 @@ ${message}
 Please reply to the patient promptly. 😊`;
 
     try {
-        const response = await axios.post(API_URL, {
-            messaging_product: 'whatsapp',
-            to: doctorPhone,
-            type: 'text',
-            text: { body }
-        }, {
+        const response = await fetch(API_URL, {
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${WHATSAPP_TOKEN}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                messaging_product: 'whatsapp',
+                to: doctorPhone,
+                type: 'text',
+                text: { body }
+            })
         });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error?.message || response.statusText);
+        }
+
         console.log(`✅ Contact WhatsApp sent to Dr. Binu`);
-        return response.data;
+        return data;
     } catch (error) {
-        console.error('❌ WhatsApp send failed:', error.response?.data || error.message);
+        console.error('❌ WhatsApp send failed:', error.message);
         return null;
     }
 };

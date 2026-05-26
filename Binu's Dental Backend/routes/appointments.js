@@ -3,7 +3,7 @@ import { authenticate } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/adminauth.js';
 import Appointment from '../models/appointments.model.js';
 import User from '../models/user.js';
-import { sendWhatsAppReminder } from '../services/whatsapp.js';
+
 import { getAppointments, createAppointment, updateAppointmentStatus } from '../controllers/appointment.controller.js';
 
 const appointmentsRouter = new Router();
@@ -45,8 +45,6 @@ appointmentsRouter.post('/public-book', async (req, res) => {
             patientId: patient._id, patientName, patientPhone: phone, patientEmail: email || '',
             date, time, service: service || 'Consultation', status: 'scheduled', notes: notes || '', source: 'website'
         });
-
-        sendWhatsAppReminder(phone, patientName, date, time, service || 'Consultation').catch(err => console.error('WhatsApp error:', err));
 
         return res.status(201).json({ success: true, message: 'Appointment booked successfully!', appointment: newAppointment });
     } catch (error) {

@@ -86,7 +86,6 @@ export default function Booking() {
           <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"><CheckCircle className="w-10 h-10" /></div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('booking_confirmed')}</h2>
           <p className="text-gray-600 mb-6">{t('booking_success_msg')}</p>
-          <p className="text-sm text-green-700 bg-green-50 p-3 rounded-xl mb-6 font-medium">📱 {t('whatsapp_reminder_note')}</p>
           <button onClick={() => { setSuccess(false); setPatientName(''); setPhone(''); setEmail(''); setService(''); setDate(''); setTime(''); setNotes(''); }}
             className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-hover transition-colors w-full">{t('book_another')}</button>
         </div>

@@ -14,10 +14,12 @@ router.post('/', async (req, res, next) => {
         const result = await sendWhatsAppContact(name, email || 'Not provided', message);
 
         if (result) {
-            res.status(200).json({ message: "Message sent successfully!" });
+            console.log(`✅ Contact message from ${name} forwarded via WhatsApp.`);
         } else {
-            res.status(500).json({ message: "Failed to send message via WhatsApp." });
+            console.warn(`⚠️ WhatsApp forwarding failed for contact message from ${name}. Msg: "${message}"`);
         }
+
+        return res.status(200).json({ message: "Message received successfully!" });
     } catch (error) {
         next(error);
     }
