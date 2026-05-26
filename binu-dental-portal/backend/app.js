@@ -1,9 +1,14 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import { PORT } from "./config/env.js";
 import connectToDatabase from "./database/mongodb.js";
 import { errorHandler } from "./middleware/errorhandler.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import all routes
 import authRouter from "./routes/auth.js";
@@ -24,7 +29,16 @@ import contactRouter from "./routes/contact.js";
 const app = express();
 
 // 1. Global Middleware
-app.use(cors()); // Allows your frontend app to communicate with this API
+const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+app.use(cors({
+    origin: function(origin, callback) {
+        if (!origin) return callback(null, true);
+        if (process.env.NODE_ENV === 'production') return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
+        return callback(new Error('CORS connection blocked'), false);
+    },
+    credentials: true
+}));
 app.use(express.json()); // Essential for parsing incoming JSON bodies (req.body)
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads')); // Serve uploaded scans & reports
@@ -49,9 +63,20 @@ app.get('/', (req, res) => {
     res.send("Welcome to Binu's Dental Booking API");
 });
 
-// 3. Fallback for non-existent routes
+// 2. Serve Frontend in Production
+if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+}
+
+// 3. Fallback for non-existent routes AND React Router
 app.use('*', (req, res) => {
-    res.status(404).json({ message: 'API Route not found' });
+    if (req.baseUrl.startsWith('/api')) {
+        return res.status(404).json({ message: 'API Route not found' });
+    }
+    if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+        return res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+    }
+    res.status(404).json({ message: 'Route not found' });
 });
 
 // 4. Global Error Handler (Must be placed AFTER all routes and middleware)

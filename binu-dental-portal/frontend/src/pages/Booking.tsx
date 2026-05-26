@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Clock, User, Phone, Mail, CheckCircle, MessageSquare } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, User, Phone, Mail, CheckCircle, MessageSquare, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const MORNING_SLOTS = ['09:00 AM','09:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 PM','12:30 PM'];
 const EVENING_SLOTS = ['05:30 PM','06:00 PM','06:30 PM','07:00 PM','07:30 PM','08:00 PM'];
 
 export default function Booking() {
   const { t } = useTranslation();
+  const { currentUser, dbUser } = useAuth();
+  
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
@@ -22,6 +26,15 @@ export default function Booking() {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [notes, setNotes] = useState('');
+
+  // Prefill user data if logged in
+  useEffect(() => {
+    if (dbUser) {
+      if (dbUser.name) setPatientName(dbUser.name);
+      if (dbUser.phone) setPhone(dbUser.phone);
+      if (dbUser.email) setEmail(dbUser.email);
+    }
+  }, [dbUser]);
 
   // Fetch booked slots when date changes
   useEffect(() => {
@@ -78,6 +91,23 @@ export default function Booking() {
       toast.error(error.response?.data?.message || t('booking_failed'));
     } finally { setLoading(false); }
   };
+
+  if (!currentUser) {
+    return (
+      <div className="pt-32 pb-16 min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="glass p-12 rounded-3xl max-w-md text-center animate-in zoom-in duration-500">
+          <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-10 h-10" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('login_required')}</h2>
+          <p className="text-gray-600 mb-8">{t('login_to_book')}</p>
+          <Link to="/login" className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-hover transition-colors w-full inline-block">
+            {t('login')}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (success) {
     return (
